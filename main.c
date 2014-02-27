@@ -30,10 +30,16 @@ int main(int argc, char **argv)
 
   FILE *fp;
   fp = fopen(argv[1], "r");
+  
+  if(fp != NULL) {
+    printf("Checksum for %s: %x\n", argv[1], fadler32(fp));
+    fclose(fp);
+    return 0;
+  }
+  else
+    fprintf(stderr, "Error: fopen() failed. (file doesn't exist?)\n");
 
-  printf("Checksum for %s: %x\n", argv[1], fadler32(fp));
-
-  return 0;
+  return 1;
 }
 
 uint32_t fadler32(FILE *fp)
@@ -42,7 +48,6 @@ uint32_t fadler32(FILE *fp)
   int c;
   uint32_t a = 1, b = 0;
 
-
   while((c = fgetc(fp)) != EOF) {
     a = (a + c) % 65521;
     b = (b + a) % 65521;
@@ -50,5 +55,3 @@ uint32_t fadler32(FILE *fp)
 
   return (b << 16) | a;
 }
-
-
